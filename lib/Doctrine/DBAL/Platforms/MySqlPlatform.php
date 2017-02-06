@@ -449,7 +449,7 @@ class MySqlPlatform extends AbstractPlatform
         }
 
         // Propagate foreign key constraints only for InnoDB.
-        if (isset($options['foreignKeys']) && $engine === 'INNODB') {
+        if (isset($options['foreignKeys']) && $engine === 'INNODB' && ! isset($options['partition_options'])) {
             foreach ((array) $options['foreignKeys'] as $definition) {
                 $sql[] = $this->getCreateForeignKeySQL($definition, $tableName);
             }
@@ -608,6 +608,16 @@ class MySqlPlatform extends AbstractPlatform
             $keyColumns = array_unique(array_values($diff->addedIndexes['primary']->getColumns()));
             $queryParts[] = 'ADD PRIMARY KEY (' . implode(', ', $keyColumns) . ')';
             unset($diff->addedIndexes['primary']);
+        }
+
+        // Partitioning
+        if ($diff->fromTable && $diff->fromTable instanceof Table && $diff->toTable && $diff->toTable instanceof Table) {
+            $fromPartition = $this->buildPartitionOptions($diff->fromTable->getOptions());
+            $toPartition = $this->buildPartitionOptions($diff->toTable->getOptions());
+
+            if ($fromPartition !== $toPartition) {
+                $queryParts[] = $toPartition;
+            }
         }
 
         $sql = array();
