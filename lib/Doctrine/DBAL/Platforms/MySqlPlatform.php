@@ -680,10 +680,11 @@ class MySqlPlatform extends AbstractPlatform
             $diff->removedForeignKeys = array();
         }
 
-        // You cant add foreign keys on partition tables
+        // You can't add foreign keys on partition tables
         if ($diff->toTable && $diff->toTable instanceof Table && $diff->toTable->hasOption('partition_options')) {
             $diff->addedForeignKeys   = array();
             $diff->changedForeignKeys = array();
+            $diff->removedForeignKeys = $diff->fromTable->getForeignKeys();
         }
 
         $sql = array_merge(
