@@ -123,6 +123,11 @@ class TableDiff
     public $fromTable;
 
     /**
+     * @var \Doctrine\DBAL\Schema\Table
+     */
+    public $toTable;
+
+    /**
      * Constructs an TableDiff object.
      *
      * @param string                             $tableName
@@ -133,10 +138,11 @@ class TableDiff
      * @param \Doctrine\DBAL\Schema\Index[]      $changedIndexes
      * @param \Doctrine\DBAL\Schema\Index[]      $removedIndexes
      * @param \Doctrine\DBAL\Schema\Table|null   $fromTable
+     * @param \Doctrine\DBAL\Schema\Table|null   $toTable
      */
     public function __construct($tableName, $addedColumns = array(),
         $changedColumns = array(), $removedColumns = array(), $addedIndexes = array(),
-        $changedIndexes = array(), $removedIndexes = array(), Table $fromTable = null)
+        $changedIndexes = array(), $removedIndexes = array(), Table $fromTable = null, Table $toTable = null)
     {
         $this->name = $tableName;
         $this->addedColumns = $addedColumns;
@@ -146,6 +152,7 @@ class TableDiff
         $this->changedIndexes = $changedIndexes;
         $this->removedIndexes = $removedIndexes;
         $this->fromTable = $fromTable;
+        $this->toTable = $toTable;
     }
 
     /**

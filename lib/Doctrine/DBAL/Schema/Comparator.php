@@ -206,6 +206,7 @@ class Comparator
         $changes = 0;
         $tableDifferences = new TableDiff($table1->getName());
         $tableDifferences->fromTable = $table1;
+        $tableDifferences->toTable = $table2;
 
         $table1Columns = $table1->getColumns();
         $table2Columns = $table2->getColumns();
