@@ -610,16 +610,6 @@ class MySqlPlatform extends AbstractPlatform
             unset($diff->addedIndexes['primary']);
         }
 
-        // Partitioning
-        if ($diff->fromTable && $diff->fromTable instanceof Table && $diff->toTable && $diff->toTable instanceof Table) {
-            $fromPartition = $this->buildPartitionOptions($diff->fromTable->getOptions());
-            $toPartition = $this->buildPartitionOptions($diff->toTable->getOptions());
-
-            if ($fromPartition !== $toPartition) {
-                $queryParts[] = $toPartition;
-            }
-        }
-
         $sql = array();
         $tableSql = array();
 
@@ -627,6 +617,17 @@ class MySqlPlatform extends AbstractPlatform
             if (count($queryParts) > 0) {
                 $sql[] = 'ALTER TABLE ' . $diff->getName($this)->getQuotedName($this) . ' ' . implode(", ", $queryParts);
             }
+
+            // Partitioning
+            if ($diff->fromTable && $diff->fromTable instanceof Table && $diff->toTable && $diff->toTable instanceof Table) {
+                $fromPartition = $this->buildPartitionOptions($diff->fromTable->getOptions());
+                $toPartition = $this->buildPartitionOptions($diff->toTable->getOptions());
+
+                if ($fromPartition !== $toPartition) {
+                    $sql[] = 'ALTER TABLE ' . $diff->getName($this)->getQuotedName($this) . ' ' . $toPartition;
+                }
+            }
+
             $sql = array_merge(
                 $this->getPreAlterTableIndexForeignKeySQL($diff),
                 $sql,
